@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import connectDB from './src/db/connect.js';
 import auth from './src/routes/auth.routes.js';
+import users from './src/routes/user.routes.js';
 
 /*****=== CONFIGURATION *****/
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use(morgan('common'));
 
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
 
 const startServer = async () => {
   try {
