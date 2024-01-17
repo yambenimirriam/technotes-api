@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import connectDB from './src/db/connect.js';
 import auth from './src/routes/auth.routes.js';
+import notes from './src/routes/note.routes.js';
 import users from './src/routes/user.routes.js';
 
 /*****=== CONFIGURATION *****/
@@ -23,6 +24,7 @@ app.use(morgan('common'));
 
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
+app.use('/api/v1/notes', notes);
 
 const startServer = async () => {
   try {
