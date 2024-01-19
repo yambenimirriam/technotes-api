@@ -47,9 +47,54 @@ export const getAllNotes = async (req, res) => {
 
 /******* UPDATE NOTE *******/
 export const updateNote = async (req, res) => {
+  const id = req.params.id;
+  const { title, text, completed } = req.body;
+
+  // Confirm note exists to update
+  const note = await Note.findById(id).exec();
+
+  if (!note) {
+    return res.status(400).json({ message: 'Note not found' });
+  }
+
+  // Check for duplicate title
+  const duplicate = await Note.findOne({ title })
+    .collation({ locale: 'en', strength: 2 })
+    .lean()
+    .exec();
+
+  // Allow renaming of the original note
+  if (duplicate && duplicate?._id.toString() !== id) {
+    return res.status(409).json({ message: 'Duplicate note title' });
+  }
+
+  note.user = req.user.id;
+  note.title = title;
+  note.text = text;
+  note.completed = completed;
+
+  const updatedNote = await note.save();
+  if (!updatedNote) {
+    return res.status(400).json({ message: 'Invalid note data received' });
+  }
+
   return res.status(200).json({ message: 'Note updated successfully' });
 };
 /******* DELETE NOTE *******/
 export const deleteNote = async (req, res) => {
+  const id = req.params.id;
+
+  // Confirm note exists to delete
+  const note = await Note.findById(id).exec();
+
+  if (!note) {
+    return res.status(400).json({ message: 'Note not found' });
+  }
+
+  const result = await note.deleteOne();
+  if (!result) {
+    return res.status(400).json({ message: 'Error ocuured' });
+  }
+
   return res.status(200).json({ message: 'Note deleted' });
 };
